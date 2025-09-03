@@ -241,15 +241,12 @@
             addOutput(`\nDAILY REVENUE CANNIBALIZED: $${(daily_destruction/1e6).toFixed(1)}M`);
             addOutput(`QUARTERLY DESTRUCTION: $${(daily_destruction * 90 / 1e9).toFixed(1)}B`);
             addOutput(`ANNUAL RUN RATE: $${(daily_destruction * 365 / 1e9).toFixed(1)}B\n`);
+            
+            const annualDestructionPerPercent = googleData.total_queries_daily * 0.01 * (Math.abs(googleData.ai_search.margin) + googleData.trad_search.revenue) * 365;
+            const formattedDestruction = `$${(annualDestructionPerPercent / 1e9).toFixed(1)}B`;
+            const destructionString = `[!] Every 1% shift to AI destroys ${formattedDestruction} in annual profit`;
 
-            const one_percent_queries = googleData.total_queries_daily * 0.01;
-            const destruction_per_query = Math.abs(googleData.ai_search.margin) + googleData.trad_search.revenue;
-            const daily_destruction_per_one_percent = one_percent_queries * destruction_per_query;
-            const annual_destruction_per_one_percent_in_billions = (daily_destruction_per_one_percent * 365) / 1e9;
-
-            const dynamic_string = `[!] Every 1% shift to AI destroys $${annual_destruction_per_one_percent_in_billions.toFixed(1)}B in annual revenue`;
-
-            typeEffect(dynamic_string, 'error', () => {
+            typeEffect(destructionString, 'error', () => {
                 addOutput('\n[!] INDUSTRY TOTAL LOSSES 2025: $27.4B and ACCELERATING', 'critical');
             });
         }
