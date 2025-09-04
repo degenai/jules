@@ -275,6 +275,8 @@
 
         function runSimulation() {
             addOutput('\n[*] Initializing GOOGL profit destruction simulation...\n');
+            addOutput('[*] AI_QUERIES% = Percentage of daily searches using AI responses');
+            addOutput('[*] Traditional search = profitable, AI search = LOSES money per query\n');
             liveMarginMeter();
 
             setTimeout(() => {
@@ -288,7 +290,7 @@
 
                 // EQ-style visualization
                 addOutput(createEQVisualizer(margins, 'MARGINS   '));
-                addOutput(createEQVisualizer(ai_adoption, 'AI ADOPTION'));
+                addOutput(createEQVisualizer(ai_adoption, 'AI QUERIES%'));
                 addOutput('════════════════════════════════════════════════════════════');
 
                 quarters.forEach((q, i) => {
@@ -296,7 +298,7 @@
                     const ai_bar = '▓'.repeat(Math.max(1, Math.floor(ai_adoption[i] / 5)));
                     const loss_indicator = margins[i] < 15 ? '⚠ ' : margins[i] < 10 ? '🔥' : '  ';
 
-                    const output = `${q}: AI=${ai_adoption[i].toString().padStart(2)}% MARGIN=${margins[i].toString().padStart(2)}% REV=$${revenues[i]}B ${loss_indicator}[${margin_bar.padEnd(12, '░')}]`;
+                    const output = `${q}: AI_QUERIES=${ai_adoption[i].toString().padStart(2)}% MARGIN=${margins[i].toString().padStart(2)}% REV=$${revenues[i]}B ${loss_indicator}[${margin_bar.padEnd(12, '░')}]`;
 
                     if (margins[i] < 10) {
                         addOutput(output, 'critical');
