@@ -166,22 +166,22 @@
         const console_output = document.getElementById('console');
         const input = document.getElementById('input');
 
-        // Real-time data
+        // Real-time data (Updated Q3 2024)
         const googleData = {
-            current_quarter: 'Q1_2025',
-            search_revenue_per_quarter: 44000000000,
-            operating_margin: 0.31,
-            ai_capex_quarterly: 21000000000,
-            total_queries_daily: 14000000000,
+            current_quarter: 'Q3_2024',
+            search_revenue_per_quarter: 49200000000,
+            operating_margin: 0.32,
+            ai_capex_quarterly: 13100000000,
+            total_queries_daily: 15500000000,
 
             // Per query economics
-            trad_search: { cost: 0.001, revenue: 0.016, margin: 0.015 },
-            ai_search: { cost: 0.020, revenue: 0.012, margin: -0.008 },
+            trad_search: { cost: 0.0008, revenue: 0.018, margin: 0.0172 },
+            ai_search: { cost: 0.025, revenue: 0.011, margin: -0.014 },
 
             // Current state
-            ai_query_percentage: 0.08,
+            ai_query_percentage: 0.12,
             margin_trajectory: 'DECLINING',
-            quarters_to_crisis: 6
+            quarters_to_crisis: 5
         };
 
         function addOutput(text, className = 'output') {
@@ -210,22 +210,93 @@
             }, 20);
         }
 
+        function createEQVisualizer(data, label, maxBars = 40) {
+            const maxVal = Math.max(...data);
+            const bars = data.map(val => {
+                const height = Math.floor((val / maxVal) * 8);
+                const chars = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+                return chars[Math.max(0, Math.min(height, 7))];
+            });
+            
+            return `${label}: [${bars.join('')}]`;
+        }
+
+        function animatedDataStream(values, labels, className = 'output') {
+            let frame = 0;
+            const streamDiv = document.createElement('div');
+            streamDiv.className = className;
+            console_output.appendChild(streamDiv);
+
+            const animate = () => {
+                const data = values.map(val => val + (Math.random() - 0.5) * val * 0.1);
+                const bars = data.map((val, i) => {
+                    const height = Math.floor((val / Math.max(...values)) * 12);
+                    return '█'.repeat(Math.max(1, height));
+                });
+
+                streamDiv.innerHTML = labels.map((label, i) => 
+                    `${label.padEnd(12)} [${bars[i].substring(0, 20).padEnd(20, '░')}] ${(data[i]/1e9).toFixed(1)}B`
+                ).join('\n');
+
+                frame++;
+                if (frame < 30) {
+                    setTimeout(animate, 100);
+                }
+            };
+            animate();
+            console_output.scrollTop = console_output.scrollHeight;
+        }
+
+        function liveMarginMeter() {
+            addOutput('\n[*] LIVE MARGIN DESTRUCTION METER', 'warning');
+            addOutput('═══════════════════════════════════════════════════════════');
+            
+            const margin = googleData.operating_margin;
+            const targetMargin = 0.05; // 5% crisis threshold
+            const barLength = 50;
+            const currentPos = Math.floor((margin / 0.4) * barLength);
+            const dangerPos = Math.floor((targetMargin / 0.4) * barLength);
+            
+            let meterBar = '';
+            for (let i = 0; i < barLength; i++) {
+                if (i < dangerPos) {
+                    meterBar += '░';
+                } else if (i < currentPos) {
+                    meterBar += i < currentPos - 5 ? '█' : '▓';
+                } else {
+                    meterBar += '░';
+                }
+            }
+            
+            addOutput(`MARGIN: [${meterBar}] ${(margin * 100).toFixed(1)}%`);
+            addOutput(`CRISIS:  ${' '.repeat(dangerPos)}↑ DANGER ZONE`);
+            addOutput('═══════════════════════════════════════════════════════════\n');
+        }
+
         function runSimulation() {
             addOutput('\n[*] Initializing GOOGL profit destruction simulation...\n');
+            liveMarginMeter();
 
             setTimeout(() => {
-                const quarters = ['Q1_25', 'Q2_25', 'Q3_25', 'Q4_25', 'Q1_26', 'Q2_26', 'Q3_26'];
-                const ai_adoption = [8, 15, 25, 35, 45, 55, 65];
-                const margins = [31, 28, 24, 18, 14, 10, 5];
+                const quarters = ['Q4_24', 'Q1_25', 'Q2_25', 'Q3_25', 'Q4_25', 'Q1_26', 'Q2_26'];
+                const ai_adoption = [12, 18, 28, 38, 48, 58, 68];
+                const margins = [32, 29, 25, 19, 15, 11, 6];
+                const revenues = [49.2, 47.8, 45.1, 41.2, 36.8, 31.5, 25.2];
 
                 addOutput('QUARTERLY MARGIN DESTRUCTION FORECAST:');
-                addOutput('=====================================');
+                addOutput('════════════════════════════════════════════════════════════');
+
+                // EQ-style visualization
+                addOutput(createEQVisualizer(margins, 'MARGINS   '));
+                addOutput(createEQVisualizer(ai_adoption, 'AI ADOPTION'));
+                addOutput('════════════════════════════════════════════════════════════');
 
                 quarters.forEach((q, i) => {
-                    const margin_bar = '█'.repeat(Math.max(0, margins[i] / 2));
-                    const loss_bar = '░'.repeat(Math.max(0, (35 - margins[i]) / 2));
+                    const margin_bar = '█'.repeat(Math.max(1, Math.floor(margins[i] / 3)));
+                    const ai_bar = '▓'.repeat(Math.max(1, Math.floor(ai_adoption[i] / 5)));
+                    const loss_indicator = margins[i] < 15 ? '⚠ ' : margins[i] < 10 ? '🔥' : '  ';
 
-                    const output = `${q}: AI=${ai_adoption[i]}% MARGIN=${margins[i]}% [${margin_bar}${loss_bar}]`;
+                    const output = `${q}: AI=${ai_adoption[i].toString().padStart(2)}% MARGIN=${margins[i].toString().padStart(2)}% REV=$${revenues[i]}B ${loss_indicator}[${margin_bar.padEnd(12, '░')}]`;
 
                     if (margins[i] < 10) {
                         addOutput(output, 'critical');
@@ -236,9 +307,15 @@
                     }
                 });
 
-                addOutput('\n[!] CRITICAL: Operating loss projected Q3_2026', 'error');
-                addOutput('[!] CONTAGION: NVDA collapse follows immediately', 'error');
-                addOutput('[!] SYSTEMIC: S&P500 -30% minimum on tech implosion\n', 'error');
+                addOutput('\n[!] CRITICAL: Operating loss projected Q2_2026', 'error');
+                addOutput('[!] CONTAGION: NVDA -70% follows within 30 days', 'error');
+                addOutput('[!] SYSTEMIC: S&P500 -35% minimum on tech sector implosion\n', 'error');
+                
+                // Animated revenue stream
+                setTimeout(() => {
+                    addOutput('\n[*] LIVE REVENUE STREAMS:', 'warning');
+                    animatedDataStream([49.2, 13.1, 8.2], ['SEARCH REV', 'AI CAPEX', 'NET PROFIT']);
+                }, 500);
             }, 1000);
         }
 
@@ -325,6 +402,61 @@ AI impact: s↓ (less labor) / (c↑↑↑ + v↓) = r→0
             }, 300);
         }
 
+        function showLiveVisualizer() {
+            addOutput('\n[*] INITIALIZING LIVE EQ VISUALIZER...', 'warning');
+            addOutput('═══════════════════════════════════════════════════════════');
+            
+            liveMarginMeter();
+            
+            setTimeout(() => {
+                addOutput('[*] REAL-TIME DATA STREAMS ACTIVE:', 'warning');
+                
+                // Multi-metric animated visualization
+                const metrics = [
+                    [googleData.search_revenue_per_quarter/1e9, googleData.ai_capex_quarterly/1e9, 
+                     googleData.operating_margin*100, googleData.ai_query_percentage*100],
+                    [45.2, 14.8, 28.5, 15.2],
+                    [41.8, 16.9, 24.1, 18.7],
+                    [38.1, 19.2, 19.8, 22.3]
+                ];
+                
+                const labels = ['SEARCH REV', 'AI CAPEX  ', 'MARGIN %  ', 'AI QUERIES'];
+                
+                let frame = 0;
+                const streamDiv = document.createElement('div');
+                streamDiv.className = 'output';
+                console_output.appendChild(streamDiv);
+
+                const animate = () => {
+                    const currentMetrics = metrics[frame % metrics.length];
+                    const noise = currentMetrics.map(val => val + (Math.random() - 0.5) * val * 0.05);
+                    
+                    const bars = noise.map((val, i) => {
+                        const maxVals = [50, 25, 35, 25]; // Max values for normalization
+                        const height = Math.floor((val / maxVals[i]) * 15);
+                        return '█'.repeat(Math.max(1, height));
+                    });
+
+                    const display = labels.map((label, i) => {
+                        const unit = i < 2 ? 'B' : '%';
+                        const value = i < 2 ? noise[i].toFixed(1) : noise[i].toFixed(0);
+                        return `${label} [${bars[i].substring(0, 25).padEnd(25, '░')}] $${value}${unit}`;
+                    }).join('\n');
+
+                    streamDiv.textContent = display;
+                    frame++;
+                    
+                    if (frame < 60) {
+                        setTimeout(animate, 150);
+                    } else {
+                        addOutput('\n[!] STREAM TERMINATED - MARGIN DEATH IMMINENT', 'critical');
+                    }
+                };
+                animate();
+                console_output.scrollTop = console_output.scrollHeight;
+            }, 800);
+        }
+
         // Command handler
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -344,12 +476,17 @@ AI impact: s↓ (less labor) / (c↑↑↑ + v↓) = r→0
                     case 'crisis':
                         projectCrisis();
                         break;
+                    case 'visual':
+                    case 'viz':
+                        showLiveVisualizer();
+                        break;
                     case 'help':
                         addOutput('\nAVAILABLE COMMANDS:');
                         addOutput('  run    - Run quarterly margin destruction forecast');
                         addOutput('  calc   - Calculate real-time value destruction');
                         addOutput('  marx   - Show Marxist analysis of AI contradiction');
                         addOutput('  crisis - Project systemic collapse timeline');
+                        addOutput('  visual - Live EQ-style data visualizer');
                         addOutput('  clear  - Clear terminal\n');
                         break;
                     case 'clear':
