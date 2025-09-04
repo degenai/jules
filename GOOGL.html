@@ -172,14 +172,14 @@
             search_revenue_per_quarter: 49200000000,
             operating_margin: 0.32,
             ai_capex_quarterly: 13100000000,
-            total_queries_daily: 15500000000,
+            total_queries_daily: 13600000000, // Updated to match current data
 
             // Per query economics
             trad_search: { cost: 0.0008, revenue: 0.018, margin: 0.0172 },
             ai_search: { cost: 0.025, revenue: 0.011, margin: -0.014 },
 
             // Current state
-            ai_query_percentage: 0.12,
+            ai_query_percentage: 0.131, // 13.1% based on March 2025 AI Overview data
             margin_trajectory: 'DECLINING',
             quarters_to_crisis: 5
         };
@@ -275,6 +275,8 @@
 
         function runSimulation() {
             addOutput('\n[*] Initializing GOOGL profit destruction simulation...\n');
+            addOutput('[*] AI_QUERIES% = Percentage of daily searches using AI responses');
+            addOutput('[*] Traditional search = profitable, AI search = LOSES money per query\n');
             liveMarginMeter();
 
             setTimeout(() => {
@@ -288,7 +290,7 @@
 
                 // EQ-style visualization
                 addOutput(createEQVisualizer(margins, 'MARGINS   '));
-                addOutput(createEQVisualizer(ai_adoption, 'AI ADOPTION'));
+                addOutput(createEQVisualizer(ai_adoption, 'AI QUERIES%'));
                 addOutput('════════════════════════════════════════════════════════════');
 
                 quarters.forEach((q, i) => {
@@ -296,7 +298,7 @@
                     const ai_bar = '▓'.repeat(Math.max(1, Math.floor(ai_adoption[i] / 5)));
                     const loss_indicator = margins[i] < 15 ? '⚠ ' : margins[i] < 10 ? '🔥' : '  ';
 
-                    const output = `${q}: AI=${ai_adoption[i].toString().padStart(2)}% MARGIN=${margins[i].toString().padStart(2)}% REV=$${revenues[i]}B ${loss_indicator}[${margin_bar.padEnd(12, '░')}]`;
+                    const output = `${q}: AI_QUERIES=${ai_adoption[i].toString().padStart(2)}% MARGIN=${margins[i].toString().padStart(2)}% REV=$${revenues[i]}B ${loss_indicator}[${margin_bar.padEnd(12, '░')}]`;
 
                     if (margins[i] < 10) {
                         addOutput(output, 'critical');
@@ -311,10 +313,13 @@
                 addOutput('[!] CONTAGION: NVDA -70% follows within 30 days', 'error');
                 addOutput('[!] SYSTEMIC: S&P500 -35% minimum on tech sector implosion\n', 'error');
                 
-                // Animated revenue stream
+                // Static quarterly data summary
                 setTimeout(() => {
-                    addOutput('\n[*] LIVE REVENUE STREAMS:', 'warning');
-                    animatedDataStream([49.2, 13.1, 8.2], ['SEARCH REV', 'AI CAPEX', 'NET PROFIT']);
+                    addOutput('\n[*] Q3 2024 FINANCIAL SNAPSHOT:', 'warning');
+                    addOutput(`SEARCH REV:  $${(googleData.search_revenue_per_quarter/1e9).toFixed(1)}B quarterly`);
+                    addOutput(`AI CAPEX:    $${(googleData.ai_capex_quarterly/1e9).toFixed(1)}B quarterly`);
+                    addOutput(`MARGIN:      ${(googleData.operating_margin*100).toFixed(1)}% operating`);
+                    addOutput(`AI QUERIES:  ${(googleData.ai_query_percentage*100).toFixed(0)}% of daily searches`);
                 }, 500);
             }, 1000);
         }
@@ -362,7 +367,8 @@
 
                 const formula = `
 r = s/(c+v)
-  where: s = surplus value (from labor only)
+  where: r = rate of profit
+         s = surplus value (from labor only)
          c = constant capital (AI infrastructure)
          v = variable capital (workers)
 
@@ -402,60 +408,6 @@ AI impact: s↓ (less labor) / (c↑↑↑ + v↓) = r→0
             }, 300);
         }
 
-        function showLiveVisualizer() {
-            addOutput('\n[*] INITIALIZING LIVE EQ VISUALIZER...', 'warning');
-            addOutput('═══════════════════════════════════════════════════════════');
-            
-            liveMarginMeter();
-            
-            setTimeout(() => {
-                addOutput('[*] REAL-TIME DATA STREAMS ACTIVE:', 'warning');
-                
-                // Multi-metric animated visualization
-                const metrics = [
-                    [googleData.search_revenue_per_quarter/1e9, googleData.ai_capex_quarterly/1e9, 
-                     googleData.operating_margin*100, googleData.ai_query_percentage*100],
-                    [45.2, 14.8, 28.5, 15.2],
-                    [41.8, 16.9, 24.1, 18.7],
-                    [38.1, 19.2, 19.8, 22.3]
-                ];
-                
-                const labels = ['SEARCH REV', 'AI CAPEX  ', 'MARGIN %  ', 'AI QUERIES'];
-                
-                let frame = 0;
-                const streamDiv = document.createElement('div');
-                streamDiv.className = 'output';
-                console_output.appendChild(streamDiv);
-
-                const animate = () => {
-                    const currentMetrics = metrics[frame % metrics.length];
-                    const noise = currentMetrics.map(val => val + (Math.random() - 0.5) * val * 0.05);
-                    
-                    const bars = noise.map((val, i) => {
-                        const maxVals = [50, 25, 35, 25]; // Max values for normalization
-                        const height = Math.floor((val / maxVals[i]) * 15);
-                        return '█'.repeat(Math.max(1, height));
-                    });
-
-                    const display = labels.map((label, i) => {
-                        const unit = i < 2 ? 'B' : '%';
-                        const value = i < 2 ? noise[i].toFixed(1) : noise[i].toFixed(0);
-                        return `${label} [${bars[i].substring(0, 25).padEnd(25, '░')}] $${value}${unit}`;
-                    }).join('\n');
-
-                    streamDiv.textContent = display;
-                    frame++;
-                    
-                    if (frame < 60) {
-                        setTimeout(animate, 150);
-                    } else {
-                        addOutput('\n[!] STREAM TERMINATED - MARGIN DEATH IMMINENT', 'critical');
-                    }
-                };
-                animate();
-                console_output.scrollTop = console_output.scrollHeight;
-            }, 800);
-        }
 
         // Command handler
         input.addEventListener('keypress', (e) => {
@@ -476,17 +428,12 @@ AI impact: s↓ (less labor) / (c↑↑↑ + v↓) = r→0
                     case 'crisis':
                         projectCrisis();
                         break;
-                    case 'visual':
-                    case 'viz':
-                        showLiveVisualizer();
-                        break;
                     case 'help':
                         addOutput('\nAVAILABLE COMMANDS:');
                         addOutput('  run    - Run quarterly margin destruction forecast');
                         addOutput('  calc   - Calculate real-time value destruction');
                         addOutput('  marx   - Show Marxist analysis of AI contradiction');
                         addOutput('  crisis - Project systemic collapse timeline');
-                        addOutput('  visual - Live EQ-style data visualizer');
                         addOutput('  clear  - Clear terminal\n');
                         break;
                     case 'clear':
