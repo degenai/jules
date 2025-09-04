@@ -154,7 +154,7 @@
             search_revenue_per_quarter: 44000000000,
             operating_margin: 0.31,
             ai_capex_quarterly: 21000000000,
-            total_queries_daily: 8500000000,
+            total_queries_daily: 14000000000,
 
             // Per query economics
             trad_search: { cost: 0.001, revenue: 0.016, margin: 0.015 },
@@ -238,11 +238,15 @@
             addOutput('========================================');
             addOutput(`Traditional searches: ${(trad_queries/1e9).toFixed(1)}B/day @ $${googleData.trad_search.margin}/query`);
             addOutput(`AI searches: ${(ai_queries/1e9).toFixed(1)}B/day @ -$${Math.abs(googleData.ai_search.margin)}/query`);
-            addOutput(`\nDAILY PROFIT CANNIBALIZED: $${(daily_destruction/1e6).toFixed(1)}M`);
+            addOutput(`\nDAILY REVENUE CANNIBALIZED: $${(daily_destruction/1e6).toFixed(1)}M`);
             addOutput(`QUARTERLY DESTRUCTION: $${(daily_destruction * 90 / 1e9).toFixed(1)}B`);
             addOutput(`ANNUAL RUN RATE: $${(daily_destruction * 365 / 1e9).toFixed(1)}B\n`);
+            
+            const annualDestructionPerPercent = googleData.total_queries_daily * 0.01 * (Math.abs(googleData.ai_search.margin) + googleData.trad_search.revenue) * 365;
+            const formattedDestruction = `$${(annualDestructionPerPercent / 1e9).toFixed(1)}B`;
+            const destructionString = `[!] Every 1% shift to AI destroys ${formattedDestruction} in annual profit`;
 
-            typeEffect('[!] Every 1% shift to AI destroys $1.2B in annual profit', 'error', () => {
+            typeEffect(destructionString, 'error', () => {
                 addOutput('\n[!] INDUSTRY TOTAL LOSSES 2025: $27.4B and ACCELERATING', 'critical');
             });
         }
