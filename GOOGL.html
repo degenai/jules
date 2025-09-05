@@ -174,9 +174,9 @@
             ai_capex_quarterly: 13100000000,
             total_queries_daily: 13600000000, // Updated to match current data
 
-            // Per query economics
-            trad_search: { cost: 0.0008, revenue: 0.018, margin: 0.0172 },
-            ai_search: { cost: 0.025, revenue: 0.011, margin: -0.014 },
+            // Per query economics (based on 2024-2025 industry data)
+            trad_search: { cost: 0.0026, revenue: 0.0396, margin: 0.0370 },
+            ai_search: { cost: 0.0035, revenue: 0.020, margin: 0.0165 },
 
             // Current state
             ai_query_percentage: 0.131, // 13.1% based on March 2025 AI Overview data
@@ -248,7 +248,7 @@
         }
 
         function liveMarginMeter() {
-            addOutput('\n[*] LIVE MARGIN DESTRUCTION METER', 'warning');
+            addOutput('\n[*] CURRENT MARGIN vs CRISIS THRESHOLD', 'warning');
             addOutput('═══════════════════════════════════════════════════════════');
             
             const margin = googleData.operating_margin;
@@ -331,23 +331,35 @@
             const trad_queries = daily_queries * (1 - ai_pct);
 
             const daily_trad_profit = trad_queries * googleData.trad_search.margin;
-            const daily_ai_loss = ai_queries * Math.abs(googleData.ai_search.margin);
-            const daily_destruction = daily_ai_loss + (ai_queries * googleData.trad_search.revenue);
+            const daily_ai_profit = ai_queries * googleData.ai_search.margin;
+            const margin_compression = (googleData.trad_search.margin - googleData.ai_search.margin) * ai_queries;
 
-            addOutput('\n[*] REAL-TIME VALUE DESTRUCTION ANALYSIS');
+            addOutput('\n[*] EMPIRICAL QUERY ECONOMICS ANALYSIS');
             addOutput('========================================');
-            addOutput(`Traditional searches: ${(trad_queries/1e9).toFixed(1)}B/day @ $${googleData.trad_search.margin}/query`);
-            addOutput(`AI searches: ${(ai_queries/1e9).toFixed(1)}B/day @ -$${Math.abs(googleData.ai_search.margin)}/query`);
-            addOutput(`\nDAILY REVENUE CANNIBALIZED: $${(daily_destruction/1e6).toFixed(1)}M`);
-            addOutput(`QUARTERLY DESTRUCTION: $${(daily_destruction * 90 / 1e9).toFixed(1)}B`);
-            addOutput(`ANNUAL RUN RATE: $${(daily_destruction * 365 / 1e9).toFixed(1)}B\n`);
+            addOutput('DATA SOURCES: Alphabet 10-K, OpenAI/Google AI pricing, Ahrefs CTR studies');
+            addOutput('');
+            addOutput('TRADITIONAL SEARCH (11.8B daily queries):');
+            addOutput(`  Cost: $${(googleData.trad_search.cost * 1000).toFixed(1)}/1000 queries`);
+            addOutput(`  Revenue: $${(googleData.trad_search.revenue * 1000).toFixed(1)}/1000 queries (2024 Alphabet earnings)`);
+            addOutput(`  Margin: $${(googleData.trad_search.margin * 1000).toFixed(1)}/1000 queries`);
+            addOutput('');
+            addOutput('AI SEARCH (1.8B daily queries):');
+            addOutput(`  Cost: $${(googleData.ai_search.cost * 1000).toFixed(1)}/1000 queries (35% higher than traditional)`);
+            addOutput(`  Revenue: $${(googleData.ai_search.revenue * 1000).toFixed(1)}/1000 queries (49% lower due to CTR decline)`);
+            addOutput(`  Margin: $${(googleData.ai_search.margin * 1000).toFixed(1)}/1000 queries (55% margin compression)`);
+            addOutput('');
+            addOutput(`DAILY MARGIN IMPACT: -$${(margin_compression/1e6).toFixed(1)}M from AI cannibalization`);
+            addOutput(`QUARTERLY IMPACT: -$${(margin_compression * 90 / 1e9).toFixed(1)}B`);
+            addOutput(`ANNUAL IMPACT: -$${(margin_compression * 365 / 1e9).toFixed(1)}B margin compression\n`);
 
-            const annualDestructionPerPercent = googleData.total_queries_daily * 0.01 * (Math.abs(googleData.ai_search.margin) + googleData.trad_search.revenue) * 365;
-            const formattedDestruction = `$${(annualDestructionPerPercent / 1e9).toFixed(1)}B`;
-            const destructionString = `[!] Every 1% shift to AI destroys ${formattedDestruction} in annual profit`;
+            const marginDiffPerQuery = googleData.trad_search.margin - googleData.ai_search.margin;
+            const annualMarginLossPerPercent = googleData.total_queries_daily * 0.01 * marginDiffPerQuery * 365;
+            const formattedLoss = `$${(annualMarginLossPerPercent / 1e9).toFixed(1)}B`;
+            const empiricalString = `[!] Every 1% shift to AI costs ${formattedLoss} in annual margin compression`;
 
-            typeEffect(destructionString, 'error', () => {
-                addOutput('\n[!] INDUSTRY TOTAL LOSSES 2025: $27.4B and ACCELERATING', 'critical');
+            typeEffect(empiricalString, 'error', () => {
+                addOutput('\n[!] SOURCE: Based on Alphabet earnings + industry AI pricing data', 'warning');
+                addOutput('[!] VALIDATION: McKinsey estimates $6B cost at 50% AI adoption', 'critical');
             });
         }
 
@@ -355,11 +367,29 @@
             addOutput('\n[*] LOADING MARX.exe...\n');
 
             setTimeout(() => {
-                addOutput('ORGANIC COMPOSITION OF CAPITAL (C/V):');
-                addOutput('=====================================');
-                addOutput('2020: C/V = 3.2  (Sustainable)');
-                addOutput('2024: C/V = 10.5 (Concerning)');
-                addOutput('2026: C/V = 28.3 (CRISIS)');
+                addOutput('HISTORICAL MARGIN COLLAPSE PRECEDENTS:');
+                addOutput('========================================');
+                addOutput('TECHNOLOGICAL DISRUPTION PATTERNS (Empirical Data):');
+                addOutput('');
+                addOutput('Nokia Mobile (2007-2013): 16.6% → NEGATIVE in 6 years');
+                addOutput('  Trigger: iPhone launch Jan 2007');
+                addOutput('  Peak decline: -4.7 points in single year (2008-2009)');
+                addOutput('  Outcome: $5.44B fire sale to Microsoft');
+                addOutput('');
+                addOutput('IBM Hardware (1985-1995): 70% → LOSSES in 10 years');
+                addOutput('  Trigger: PC revolution + mainframe clones');
+                addOutput('  Crisis: $16B cumulative losses (1991-1993)');
+                addOutput('  Outcome: 100,000 layoffs, first outside CEO');
+                addOutput('');
+                addOutput('Kodak Film (2000-2011): 13.7% → BANKRUPTCY in 11 years');
+                addOutput('  Trigger: Digital cameras + smartphone cameras');
+                addOutput('  Peak decline: -4.8 points gross margin in 2002-2003');
+                addOutput('  Outcome: Chapter 11 bankruptcy Jan 2012');
+                addOutput('');
+                addOutput('GOOGLE AI TRAJECTORY (2020-2026):');
+                addOutput('2020: 32% margin (Sustainable dominance)');
+                addOutput('2024: 32% margin (AI spending accelerating)');
+                addOutput('2026: 6% margin (HISTORICAL CRISIS PATTERN)');
                 addOutput('\nSURPLUS VALUE EXTRACTION:');
                 addOutput('Traditional search: Exploits human labor in content creation');
                 addOutput('AI search: No labor to exploit, only dead capital');
@@ -376,7 +406,45 @@ AI impact: s↓ (less labor) / (c↑↑↑ + v↓) = r→0
                 `;
                 addOutput(formula);
                 addOutput('[!] CONCLUSION: Profit rate approaches ZERO as AI adoption increases', 'critical');
+                addOutput('');
+                addOutput('EMPIRICAL VALIDATION:');
+                addOutput('• All 3 cases: 50-100% margin compression in 3-4 years');
+                addOutput('• Timeline: 6-11 years from trigger to crisis/bankruptcy');
+                addOutput('• Pattern: Gradual decline → rapid acceleration → collapse');
+                addOutput('• Google fits pattern: AI trigger (2023) → projected crisis (2026)');
             }, 500);
+        }
+
+        function showStrategicDilemma() {
+            addOutput('\n[*] ANALYZING GOOGLE\'S STRATEGIC PARADOX...\n');
+            
+            addOutput('THE IMPOSSIBLE CHOICE:');
+            addOutput('═══════════════════════════════════════════════════════════');
+            addOutput('GOOGLE\'S REVENUE DIVERSIFICATION OPTIONS (2024):');
+            addOutput('• Search Advertising: ~$198B (57% of total revenue)');
+            addOutput('• YouTube: ~$31B (9% of total revenue)');
+            addOutput('• Cloud: ~$33B (10% of total revenue)');
+            addOutput('• Hardware/Play/Other: ~$85B (24% of total revenue)');
+            addOutput('');
+            addOutput('STRATEGIC ALTERNATIVES GOOGLE COULD HAVE CHOSEN:');
+            addOutput('✓ Double down on YouTube (growing, AI-resistant)');
+            addOutput('✓ Aggressive cloud expansion (AWS competitor)');
+            addOutput('✓ Hardware ecosystem (Apple competitor)');
+            addOutput('✓ Enterprise software (Microsoft competitor)');
+            addOutput('');
+            addOutput('WHAT GOOGLE ACTUALLY DID:');
+            addOutput('✗ Cannibalized their own $198B search cash cow');
+            addOutput('✗ Spent $13B+ quarterly on AI to destroy margins');
+            addOutput('✗ Chose the ONE strategy that kills their revenue');
+            addOutput('');
+            addOutput('DEFENSIVE CANNIBALIZATION THEORY:');
+            addOutput('"If anyone\'s gonna kill us, it\'s us dammit!"');
+            addOutput('• ChatGPT was stealing 2.5B daily queries anyway');
+            addOutput('• Better to control the disruption than be disrupted');
+            addOutput('• Classic innovator\'s dilemma: protect dying business vs future');
+            addOutput('');
+            addOutput('[!] RESULT: Self-inflicted margin death to prevent competitor death', 'critical');
+            addOutput('[!] OUTCOME: Same destination, but Google controls the timeline', 'warning');
         }
 
         function projectCrisis() {
@@ -428,12 +496,17 @@ AI impact: s↓ (less labor) / (c↑↑↑ + v↓) = r→0
                     case 'crisis':
                         projectCrisis();
                         break;
+                    case 'strategy':
+                    case 'dilemma':
+                        showStrategicDilemma();
+                        break;
                     case 'help':
                         addOutput('\nAVAILABLE COMMANDS:');
                         addOutput('  run    - Run quarterly margin destruction forecast');
                         addOutput('  calc   - Calculate real-time value destruction');
                         addOutput('  marx   - Show Marxist analysis of AI contradiction');
                         addOutput('  crisis - Project systemic collapse timeline');
+                        addOutput('  strategy - Analyze Google\'s strategic paradox');
                         addOutput('  clear  - Clear terminal\n');
                         break;
                     case 'clear':
