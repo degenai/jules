@@ -252,24 +252,17 @@
             addOutput('═══════════════════════════════════════════════════════════');
             
             const margin = googleData.operating_margin;
-            const targetMargin = 0.05; // 5% crisis threshold
-            const barLength = 50;
-            const currentPos = Math.floor((margin / 0.4) * barLength);
-            const dangerPos = Math.floor((targetMargin / 0.4) * barLength);
+            const crisisThreshold = 0.05; // 5% crisis threshold
             
-            let meterBar = '';
-            for (let i = 0; i < barLength; i++) {
-                if (i < dangerPos) {
-                    meterBar += '░';
-                } else if (i < currentPos) {
-                    meterBar += i < currentPos - 5 ? '█' : '▓';
-                } else {
-                    meterBar += '░';
-                }
-            }
-            
-            addOutput(`MARGIN: [${meterBar}] ${(margin * 100).toFixed(1)}%`);
-            addOutput(`CRISIS:  ${' '.repeat(dangerPos)}↑ DANGER ZONE`);
+            addOutput(`CURRENT OPERATING MARGIN: ${(margin * 100).toFixed(1)}%`);
+            addOutput(`CRISIS THRESHOLD: ${(crisisThreshold * 100).toFixed(1)}% (historical breaking point)`);
+            addOutput(`MARGIN CUSHION: ${((margin - crisisThreshold) * 100).toFixed(1)} percentage points`);
+            addOutput('');
+            addOutput('MARGIN SCALE:');
+            addOutput('0%    5%    10%   15%   20%   25%   30%   35%   40%');
+            addOutput('├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤');
+            addOutput('      ↑                                   ↑');
+            addOutput('   CRISIS                              CURRENT');
             addOutput('═══════════════════════════════════════════════════════════\n');
         }
 
@@ -280,38 +273,30 @@
             liveMarginMeter();
 
             setTimeout(() => {
-                const quarters = ['Q4_24', 'Q1_25', 'Q2_25', 'Q3_25', 'Q4_25', 'Q1_26', 'Q2_26'];
-                const ai_adoption = [12, 18, 28, 38, 48, 58, 68];
-                const margins = [32, 29, 25, 19, 15, 11, 6];
-                const revenues = [49.2, 47.8, 45.1, 41.2, 36.8, 31.5, 25.2];
-
-                addOutput('QUARTERLY MARGIN DESTRUCTION FORECAST:');
+                addOutput('SCENARIO MODELING - ILLUSTRATIVE PROJECTIONS:');
                 addOutput('════════════════════════════════════════════════════════════');
-
-                // EQ-style visualization
-                addOutput(createEQVisualizer(margins, 'MARGINS   '));
-                addOutput(createEQVisualizer(ai_adoption, 'AI QUERIES%'));
-                addOutput('════════════════════════════════════════════════════════════');
-
-                quarters.forEach((q, i) => {
-                    const margin_bar = '█'.repeat(Math.max(1, Math.floor(margins[i] / 3)));
-                    const ai_bar = '▓'.repeat(Math.max(1, Math.floor(ai_adoption[i] / 5)));
-                    const loss_indicator = margins[i] < 15 ? '⚠ ' : margins[i] < 10 ? '🔥' : '  ';
-
-                    const output = `${q}: AI_QUERIES=${ai_adoption[i].toString().padStart(2)}% MARGIN=${margins[i].toString().padStart(2)}% REV=$${revenues[i]}B ${loss_indicator}[${margin_bar.padEnd(12, '░')}]`;
-
-                    if (margins[i] < 10) {
-                        addOutput(output, 'critical');
-                    } else if (margins[i] < 20) {
-                        addOutput(output, 'warning');
-                    } else {
-                        addOutput(output);
-                    }
-                });
-
-                addOutput('\n[!] CRITICAL: Operating loss projected Q2_2026', 'error');
-                addOutput('[!] CONTAGION: NVDA -70% follows within 30 days', 'error');
-                addOutput('[!] SYSTEMIC: S&P500 -35% minimum on tech sector implosion\n', 'error');
+                addOutput('WARNING: These are hypothetical scenarios, not predictions');
+                addOutput('');
+                addOutput('IF AI adoption accelerates at Nokia-like pace (6 years):');
+                addOutput('• Year 1-2: Gradual AI query growth, margins stable');
+                addOutput('• Year 3-4: Rapid AI adoption, margin compression begins');
+                addOutput('• Year 5-6: Crisis phase, potential operating losses');
+                addOutput('');
+                addOutput('IF AI adoption follows IBM pattern (10 years):');
+                addOutput('• Slower initial decline, extended margin erosion');
+                addOutput('• Longer runway for strategic pivots');
+                addOutput('• Still ends in crisis without successful transformation');
+                addOutput('');
+                addOutput('IF AI adoption mirrors Kodak (8-11 years):');
+                addOutput('• Revenue model disruption over extended period');
+                addOutput('• Multiple false recovery attempts');
+                addOutput('• Eventual business model obsolescence');
+                addOutput('');
+                addOutput('EMPIRICAL CONSTRAINTS:');
+                addOutput('• Current AI queries: 13.1% (measured)');
+                addOutput('• Margin per query difference: $0.0205 (calculated)');
+                addOutput('• Historical disruption timeline: 6-11 years (documented)');
+                addOutput('• Exact trajectory: UNKNOWN (depends on execution)');
                 
                 // Static quarterly data summary
                 setTimeout(() => {
@@ -359,7 +344,9 @@
 
             typeEffect(empiricalString, 'error', () => {
                 addOutput('\n[!] SOURCE: Based on Alphabet earnings + industry AI pricing data', 'warning');
-                addOutput('[!] VALIDATION: McKinsey estimates $6B cost at 50% AI adoption', 'critical');
+                addOutput('[!] VALIDATION: Math checks out - 136M queries × $0.0205 margin diff × 365 days', 'output');
+                addOutput('[!] CONTRAST: McKinsey estimates only $6B cost at 50% AI adoption', 'warning');
+                addOutput('[!] ASSESSMENT: We believe McKinsey is overly optimistic by 8x', 'critical');
             });
         }
 
@@ -386,10 +373,16 @@
                 addOutput('  Peak decline: -4.8 points gross margin in 2002-2003');
                 addOutput('  Outcome: Chapter 11 bankruptcy Jan 2012');
                 addOutput('');
-                addOutput('GOOGLE AI TRAJECTORY (2020-2026):');
-                addOutput('2020: 32% margin (Sustainable dominance)');
-                addOutput('2024: 32% margin (AI spending accelerating)');
-                addOutput('2026: 6% margin (HISTORICAL CRISIS PATTERN)');
+                addOutput('GOOGLE AI TRAJECTORY:');
+                addOutput('2020: 32% margin (Pre-AI era baseline)');
+                addOutput('2024: 32% margin (Current - AI costs not yet visible in margins)');
+                addOutput('2025+: UNKNOWN (Historical patterns suggest rapid decline once AI adoption accelerates)');
+                addOutput('');
+                addOutput('PROJECTION UNCERTAINTY:');
+                addOutput('• Exact timeline depends on AI adoption rate');
+                addOutput('• Margin impact depends on Google\'s ability to monetize AI search');
+                addOutput('• Historical precedents show 6-11 year disruption cycles');
+                addOutput('• Current data insufficient for precise margin forecasting');
                 addOutput('\nSURPLUS VALUE EXTRACTION:');
                 addOutput('Traditional search: Exploits human labor in content creation');
                 addOutput('AI search: No labor to exploit, only dead capital');
