@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRC_CHAT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 14px;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        #terminal {
+            max-width: 900px;
+            margin: 0 auto;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        .header {
+            color: #f00;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: flicker 0.1s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.98; }
+        }
+
+        .output {
+            color: #0f0;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #0ff;
+            text-decoration: none;
+            font-size: 12px;
+            background: rgba(0,0,0,0.8);
+            padding: 5px 10px;
+            border: 1px solid #0ff;
+        }
+
+        .back-link:hover {
+            background: rgba(0,255,255,0.1);
+        }
+
+        .irc-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #0f0;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Dashboard</a>
+
+    <div id="terminal">
+        <pre class="ascii-art">
+  ___ _____ _   _  ____
+ |_ _|_   _| | | |/ ___|
+  | |  | | | | | | |
+  | |  | | | |_| | |___
+ |___| |_|  \___/ \____|
+        [REAL-TIME CHAT]
+        </pre>
+
+        <div class="header">
+[!] SYSTEM: LIVE_CHAT.dll loaded
+[!] WARNING: Connection is unencrypted
+        </div>
+
+        <div id="console">
+            <div class="output">Welcome to the real-time chat.</div>
+            <iframe src="https://kiwiirc.com/client/irc.libera.chat/?nick=thisisez_?&theme=cli#test" class="irc-container"></iframe>
+        </div>
+    </div>
+</body>
+</html>
